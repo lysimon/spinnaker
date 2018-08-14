@@ -43,6 +43,8 @@ providers:
 
     # {{name}} will be interpolated with the aws account name (e.g. "my-aws-account-keypair").
     defaultKeyPairTemplate: "{{name}}-keypair"
+  ecs:
+    enabled: true
 
   azure:
     # For more information on configuring Microsoft Azure (azure), see
@@ -251,37 +253,49 @@ services:
         # ModifyAsgLaunchConfigurationOperation (only if no user data is
         # provided on the given request).
         enabled: true
+    host: clouddriver
 
   igor:
     # If you are integrating Jenkins then you must also enable Spinnaker's
     # "igor" subsystem.
+    host: igor
     enabled: false
+
+  orca:
+    host: orca
 
   deck:
     # Frontend configuration.
     # If you are proxying Spinnaker behind a single host, you may want to
     # override these values. Remember to run `reconfigure_spinnaker.sh` after.
-    #baseUrl: http://spinnaker.mydomain.com
-    #gateUrl: ${services.deck.baseUrl}/gate
-    #bakeryUrl: ${services.deck.baseUrl}/rosco
+    baseUrl: http://localhost:9000
+    gateUrl: ${services.deck.baseUrl}/gate
+    bakeryUrl: ${services.deck.baseUrl}/rosco
     auth:
       enabled: false
+
+  gate:
+    baseUrl: ${services.deck.baseUrl}/gate
 
   rosco:
     # You need to provide the fully-qualified path to the directory containing
     # the packer templates.
     # They typically live in rosco's config/packer directory.
     configDir: /opt/rosco/config/packer
+    host: rosco
 
   fiat:
+    host: fiat
     enabled: false
 
   chaos:
+    host: chaos
     enabled: false
 
   front50:
+    host: front50
     cassandra:
-      enabled: true
+      enabled: ${SPINNAKER_FRONT50_CASSANDRA_ENABLED:true}
     redis:
       enabled: false
 
@@ -292,7 +306,7 @@ services:
     gcs:
       enabled: false
     s3:
-      enabled: false
+      enabled: ${SPINNAKER_FRONT50_S3_ENABLED:true}
 
     # To use an Azure storage account instead of Cassandra:
     # Disable Cassandra above, enable azs, and set the storage account name and key
@@ -304,6 +318,7 @@ services:
 
   echo:
     # Persistence mechanism to use
+    host: echo
     cassandra:
       enabled: false
     inMemory:

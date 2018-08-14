@@ -1,32 +1,34 @@
-clouddriver: 
-  volumes: 
-    - "../../config:/opt/spinnaker/config"
-    - "../../config/aws:/root/.aws"
-    - "../../config/gcp:/root/.gcp"
-echo: 
-  volumes: 
-    - "../../config:/opt/spinnaker/config"
-deck:
-  volumes: 
-    - "../../config:/opt/spinnaker/config"
-    - "../../config/settings.js:/opt/deck/html/settings.js"
-    - "../../runtime:/opt/spinnaker/runtime"
-    - "../../pylib:/opt/spinnaker/pylib"
-front50: 
-  volumes: 
-    - "../../config:/opt/spinnaker/config"
-gate: 
-  volumes: 
-    - "../../config:/opt/spinnaker/config"
-igor: 
-  volumes: 
-    - "../../config:/opt/spinnaker/config"
-orca: 
-  volumes: 
-    - "../../config:/opt/spinnaker/config"
-rosco: 
-  volumes: 
-    - "../../config:/opt/spinnaker/config"
-fiat:
-  volumes:
-    - "../../config:/opt/spinnaker/config"
+version: '3'
+services:
+  clouddriver:
+    volumes:
+      - "../../config:/opt/spinnaker/config"
+      - "../../config/aws:/root/.aws"
+      - "../../config/gcp:/root/.gcp"
+  echo:
+    volumes:
+      - "../../config:/opt/spinnaker/config"
+  deck:
+    volumes:
+      - "../../config:/opt/spinnaker/config"
+      - "../../config/settings.js:/opt/deck/html/settings.js"
+      - "../../runtime:/opt/spinnaker/runtime"
+      - "../../pylib:/opt/spinnaker/pylib"
+  front50:
+    volumes:
+      - "../../config:/opt/spinnaker/config"
+  gate:
+    volumes:
+      - "../../config:/opt/spinnaker/config"
+  igor:
+    volumes:
+      - "../../config:/opt/spinnaker/config"
+  orca:
+    volumes:
+      - "../../config:/opt/spinnaker/config"
+  rosco:
+    volumes:
+      - "../../config:/opt/spinnaker/config"
+  fiat:
+    volumes:
+      - "../../config:/opt/spinnaker/config"

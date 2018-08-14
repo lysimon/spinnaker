@@ -4,6 +4,20 @@ This is an experimental integration of Spinnaker and Docker Compose using docker
 
 *Note: These instructions have been tested on Mac OS 10.11.1 and Docker Toolbox 1.9.0b, but might require slight tweaking if you are using a different platform.*
 
+
+## Branch specially done for aws with iam
+# Install git + docker, to download our custom config of spinnaker + docker-compose
+yum -y install docker git epel-release python-pip
+systemctl enable docker
+systemctl start docker
+pip install docker-compose
+
+cd /root
+rm -Rf spinnaker
+git clone https://github.com/lysimon/spinnaker.git
+cd spinnaker/experimental/docker-compose/
+./configure_local.sh
+
 ## Limitations
 
 * The docker compose project is intended as a 'try Spinnaker now' tool. It's not intended for production use.
@@ -25,7 +39,7 @@ This is an experimental integration of Spinnaker and Docker Compose using docker
 3. Run ```DOCKER_IP=`docker-machine ip default` docker-compose up -d```, this will pull all the images needed to run Spinnaker from Docker Hub.
 4. You should see all the containers for your microservice come up, one by one in Kitematic.
 
-Note ( if you're running the docker app, you can replace any instance of DOCKER_IP in this document with DOCKER_IP=docker.local ) 
+Note ( if you're running the docker app, you can replace any instance of DOCKER_IP in this document with DOCKER_IP=docker.local )
 
 ## Using Spinnaker locally
 

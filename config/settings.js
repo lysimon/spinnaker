@@ -1,141 +1,196 @@
 'use strict';
 
-
-/**
- * This section is managed by scripts/reconfigure_spinnaker.sh
- * If hand-editing, only add comment lines that look like
- * '// var VARIABLE = VALUE'
- * and let scripts/reconfigure manage the actual values.
- */
-// BEGIN reconfigure_spinnaker
-
-// var gateUrl = ${services.deck.gateUrl};
-// var authEnabled = ${services.deck.auth.enabled};
-// var defaultTimeZone = ${services.deck.timezone};
-// var awsDefaultRegion = ${providers.aws.defaultRegion};
-// var awsPrimaryAccount = ${providers.aws.primaryCredentials.name};
-// var googleDefaultRegion = ${providers.google.defaultRegion};
-// var googleDefaultZone = ${providers.google.defaultZone};
-// var googlePrimaryAccount = ${providers.google.primaryCredentials.name};
-// var azureDefaultRegion = ${providers.azure.defaultRegion};
-// var azurePrimaryAccount = ${providers.azure.primaryCredentials.name};
-// var cfDefaultRegion = ${providers.cf.defaultOrg};
-// var cfDefaultZone = ${providers.cf.defaultSpace};
-// var cfPrimaryAccount = ${providers.cf.primaryCredentials.name};
-// var titanDefaultRegion = ${providers.titan.defaultRegion};
-// var titanPrimaryAccount = ${providers.titan.primaryCredentials.name};
-// var kubernetesDefaultNamespace = ${providers.kubernetes.primaryCredentials.namespace};
-// var kubernetesPrimaryAccount = ${providers.kubernetes.primaryCredentials.name};
-// var emailEnabled = ${services.echo.notifications.mail.enabled};
-// var hipchatEnabled = ${services.echo.notifications.hipchat.enabled};
-// var hipchatBotName = ${services.echo.notifications.hipchat.botName};
-// var smsEnabled = ${services.echo.notifications.sms.enabled};
-// var slackEnabled = ${services.echo.notifications.slack.enabled};
-// var slackBotName = ${services.echo.notifications.slack.botName};
-// var fiatEnabled = ${services.fiat.enabled};
-// var chaosEnabled = ${services.chaos.enabled};
-// var openstackPrimaryAccount = ${providers.openstack.primaryCredentials.name};
-// var openstackDefaultRegion = ${providers.openstack.defaultRegion};
-// var appenginePrimaryAccount = ${providers.appengine.primaryCredentials.name};
-// var dcosPrimaryAccount = ${providers.dcos.primaryCredentials.name};
-
-// END reconfigure_spinnaker
-/**
- * Any additional custom var statements can go below without
- * being affected by scripts/reconfigure_spinnaker.sh
- */
+var gateHost = '{%gate.baseUrl%}';
+var bakeryDetailUrl = gateHost + '/bakery/logs/{{context.region}}/{{context.status.resourceId}}';
+var authEndpoint = gateHost + '/auth/user';
+var authEnabled = '{%features.auth%}' === 'true';
+var chaosEnabled = '{%features.chaos%}' === 'true';
+var fiatEnabled = '{%features.fiat%}' === 'true';
+var iapRefresherEnabled = '{%features.iapRefresherEnabled}' === 'true';
+var jobsEnabled = '{%features.jobs%}' === 'true';
+var infrastructureStagesEnabled = '{%features.infrastructureStages%}' === 'true';
+var pipelineTemplatesEnabled = '{%features.pipelineTemplates%}' === 'true';
+var artifactsEnabled = '{%features.artifacts%}' === 'true';
+var travisEnabled = '{%features.travis%}' === 'true';
+var werckerEnabled = '{%features.wercker%}' === 'true';
+var mineCanaryEnabled = '{%features.mineCanary%}' === 'true';
+var reduxLoggerEnabled = '{%canary.reduxLogger%}' === 'true';
+var defaultMetricsAccountName = '{%canary.defaultMetricsAccount%}';
+var defaultStorageAccountName = '{%canary.defaultStorageAccount%}';
+var defaultCanaryJudge = '{%canary.defaultJudge%}';
+var defaultMetricsStore = '{%canary.defaultMetricsStore%}';
+var canaryStagesEnabled = '{%canary.stages%}' === 'true';
+var atlasWebComponentsUrl = '{%canary.atlasWebComponentsUrl%}';
+var templatesEnabled = '{%canary.templatesEnabled%}' === 'true';
+var showAllConfigsEnabled = '{%canary.showAllCanaryConfigs%}' === 'true';
+var canaryFeatureDisabled = '{%canary.featureEnabled%}' !== 'true';
+var maxPipelineAgeDays = '{%maxPipelineAgeDays%}';
+var timezone = '{%timezone%}';
+var version = '{%version%}';
+var changelogGistId = '{%changelog.gist.id%}';
+var changelogGistName = '{%changelog.gist.name%}';
+var appengineContainerImageUrlDeploymentsEnabled = '{%features.appengineContainerImageUrlDeployments%}' === 'true';
+var gce = {
+  defaults: {
+    account: '{%google.default.account%}',
+    region: '{%google.default.region%}',
+    zone: '{%google.default.zone%}',
+  },
+  associatePublicIpAddress: true,
+};
+var kubernetes = {
+  defaults: {
+    account: '{%kubernetes.default.account%}',
+    namespace: '{%kubernetes.default.namespace%}',
+    proxy: '{%kubernetes.default.proxy%}',
+    internalDNSNameTemplate: '{{name}}.{{namespace}}.svc.cluster.local',
+    instanceLinkTemplate: '{{host}}/api/v1/proxy/namespaces/{{namespace}}/pods/{{name}}',
+  },
+};
+var appengine = {
+  defaults: {
+    account: '{%appengine.default.account%}',
+    editLoadBalancerStageEnabled: '{%appengine.enabled%}' === 'true',
+    containerImageUrlDeployments: appengineContainerImageUrlDeploymentsEnabled,
+  },
+};
+var openstack = {
+  defaults: {
+    account: '{%openstack.default.account%}',
+    region: '{%openstack.default.region%}',
+  },
+};
+var azure = {
+  defaults: {
+    account: '{%azure.default.account%}',
+    region: '{%azure.default.region%}',
+  },
+};
+var oracle = {
+  defaults: {
+    account: '{%oracle.default.account%}',
+    region: '{%oracle.default.region%}',
+  },
+};
+var dcos = {
+  defaults: {
+    account: '{%dcos.default.account%}',
+  },
+};
+var ecs = {
+  defaults: {
+    account: '{%ecs.default.account%}',
+  },
+};
+var entityTagsEnabled = false;
+var netflixMode = false;
+var notificationsEnabled = '{%notifications.enabled%}' === 'true';
+var slack = {
+  enabled: '{%notifications.slack.enabled%}' === 'true',
+  botName: '{%notifications.slack.botName%}',
+};
 
 window.spinnakerSettings = {
-  gateUrl: gateUrl,
-  bakeryDetailUrl: gateUrl + '/bakery/logs/global/{{context.status.id}}',
-  authEndpoint: gateUrl + '/auth/user',
+  version: version,
+  checkForUpdates: false,
+  defaultProviders: ['aws', 'ecs', 'gce', 'azure', 'cf', 'kubernetes', 'titus', 'openstack', 'oracle', 'dcos'],
+  gateUrl: gateHost,
+  bakeryDetailUrl: bakeryDetailUrl,
+  authEndpoint: authEndpoint,
   pollSchedule: 30000,
-  defaultTimeZone: defaultTimeZone, // see http://momentjs.com/timezone/docs/#/data-utilities/
+  defaultTimeZone: timezone, // see http://momentjs.com/timezone/docs/#/data-utilities/
+  defaultCategory: 'serverGroup',
+  defaultInstancePort: 80,
+  maxPipelineAgeDays: maxPipelineAgeDays,
   providers: {
-    azure: {
-      defaults: {
-        account: azurePrimaryAccount,
-        region: azureDefaultRegion
-      },
-    },
-    gce: {
-      defaults: {
-        account: googlePrimaryAccount,
-        region: googleDefaultRegion,
-        zone: googleDefaultZone,
-      },
-      associatePublicIpAddress: true,
-    },
+    azure: azure,
     aws: {
       defaults: {
-        account: awsPrimaryAccount,
-        region: awsDefaultRegion
+        account: 'test',
+        region: 'us-east-1',
+        iamRole: 'BaseIAMRole',
+      },
+      defaultSecurityGroups: [],
+      loadBalancers: {
+        // if true, VPC load balancers will be created as internal load balancers if the selected subnet has a purpose
+        // tag that starts with "internal"
+        inferInternalFlagFromSubnet: false,
       },
       useAmiBlockDeviceMappings: false,
     },
-    cf: {
+    ecs: ecs,
+    gce: gce,
+    titus: {
       defaults: {
-        account: cfPrimaryAccount,
-        region: cfDefaultRegion
+        account: 'titustestvpc',
+        region: 'us-east-1',
+        iamProfile: '{{application}}InstanceProfile',
       },
     },
-    titan: {
-      defaults: {
-        account: titanPrimaryAccount,
-        region: titanDefaultRegion
-      },
-    },
-    kubernetes: {
-      defaults: {
-        account: kubernetesPrimaryAccount,
-        namespace: kubernetesDefaultNamespace,
-        proxy: 'localhost:8001'
-      },
-    },
-    openstack: {
-      defaults: {
-        account: openstackPrimaryAccount,
-        region: openstackDefaultRegion
-      }
-    },
-    appengine: {
-      defaults: {
-        account: appenginePrimaryAccount,
-        editLoadBalancerStageEnabled: false,
-      }
-    },
-    dcos: {
-      defaults: {
-        account: dcosPrimaryAccount
-      }
-    },
+    openstack: openstack,
+    kubernetes: kubernetes,
+    appengine: appengine,
+    oracle: oracle,
+    dcos: dcos,
+  },
+  changelog: {
+    gistId: changelogGistId,
+    fileName: changelogGistName,
   },
   notifications: {
     email: {
-      enabled: emailEnabled
+      enabled: true,
     },
     hipchat: {
-      enabled: hipchatEnabled,
-      botName: hipchatBotName
+      enabled: true,
+      botName: 'Skynet T-800',
     },
     sms: {
-      enabled: smsEnabled
+      enabled: true,
     },
-    slack: {
-      enabled: slackEnabled,
-      botName: slackBotName
-    }
+    slack: slack,
+  },
+  pagerDuty: {
+    required: false,
   },
   authEnabled: authEnabled,
+  authTtl: 600000,
+  gitSources: ['stash', 'github', 'bitbucket', 'gitlab'],
+  pubsubProviders: ['google'], // TODO(joonlim): Add amazon once it is confirmed that amazon pub/sub works.
+  triggerTypes: ['git', 'pipeline', 'docker', 'cron', 'jenkins', 'wercker', 'travis', 'pubsub', 'webhook'],
+  canary: {
+    reduxLogger: reduxLoggerEnabled,
+    metricsAccountName: defaultMetricsAccountName,
+    storageAccountName: defaultStorageAccountName,
+    defaultJudge: defaultCanaryJudge,
+    metricStore: defaultMetricsStore,
+    stagesEnabled: canaryStagesEnabled,
+    atlasWebComponentsUrl: atlasWebComponentsUrl,
+    templatesEnabled: templatesEnabled,
+    showAllConfigs: showAllConfigsEnabled,
+    featureDisabled: canaryFeatureDisabled,
+  },
   feature: {
+    entityTags: entityTagsEnabled,
+    fiatEnabled: fiatEnabled,
+    iapRefresherEnabled: iapRefresherEnabled,
+    netflixMode: netflixMode,
+    chaosMonkey: chaosEnabled,
+    jobs: jobsEnabled,
+    pipelineTemplates: pipelineTemplatesEnabled,
+    notifications: notificationsEnabled,
+    artifacts: artifactsEnabled,
+    canary: mineCanaryEnabled,
+    infrastructureStages: infrastructureStagesEnabled,
     pipelines: true,
-    notifications: false,
-    fastProperty: false,
-    vpcMigrator: false,
+    fastProperty: true,
+    vpcMigrator: true,
+    pagerDuty: false,
     clusterDiff: false,
     roscoMode: true,
-    netflixMode: false,
-    fiatEnabled: fiatEnabled,
-    chaosMonkey: chaosEnabled,
+    snapshots: false,
+    travis: travisEnabled,
+    wercker: werckerEnabled,
+    versionedProviders: true,
   },
 };

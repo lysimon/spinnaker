@@ -1,0 +1,4 @@
+FROM quay.io/spinnaker/deck:master
+
+# Need to run reconfigure spinnaker before to update settings.js
+#CMD /opt/spinnaker/runtime/reconfigure_spinnaker.sh && /bin/sh -c /opt/deck/docker/run-apache2.sh
